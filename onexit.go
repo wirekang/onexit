@@ -1,12 +1,11 @@
 package onexit
 
 import (
+	"github.com/wirekang/onexit/internal/fnpq"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
-
-	"github.com/wirekang/onexit/fnpq"
 )
 
 type deferred struct {
