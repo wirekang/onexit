@@ -16,9 +16,11 @@ func TestDeferred(t *testing.T) {
 	// to highest.
 	for i := -10; i <= 10; i++ {
 		i := i
-		d.Register(func() {
-			order = append(order, i)
-		}, i)
+		d.Register(
+			func() {
+				order = append(order, i)
+			}, i,
+		)
 	}
 
 	go d.Cleanup()
@@ -42,12 +44,14 @@ func TestRegister(t *testing.T) {
 	// to highest.
 	for i := -10; i <= 10; i++ {
 		i := i
-		Register(func() {
-			order = append(order, i)
-		}, i)
+		Register(
+			func() {
+				order = append(order, i)
+			}, i,
+		)
 	}
 
-	go forceExit(0, false)
+	go exit(0, false)
 
 	<-Done()
 
