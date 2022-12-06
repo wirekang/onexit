@@ -6,7 +6,7 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/dc0d/onexit/fnpq"
+	"github.com/wirekang/onexit/fnpq"
 )
 
 type deferred struct {
@@ -21,15 +21,17 @@ func newDeferred() *deferred {
 }
 
 func (d *deferred) Cleanup() {
-	d.cleanup.Do(func() {
-		defer close(d.done)
-		d.mx.Lock()
-		defer d.mx.Unlock()
-		for d.pq.Len() > 0 {
-			item := fnpq.Pop(&d.pq)
-			item.Action()
-		}
-	})
+	d.cleanup.Do(
+		func() {
+			defer close(d.done)
+			d.mx.Lock()
+			defer d.mx.Unlock()
+			for d.pq.Len() > 0 {
+				item := fnpq.Pop(&d.pq)
+				item.Action()
+			}
+		},
+	)
 }
 
 func (d *deferred) Done() <-chan struct{} {
@@ -77,11 +79,13 @@ func onSignal(f func(), sig ...os.Signal) {
 	if len(sig) > 0 {
 		signal.Notify(sigc, sig...)
 	} else {
-		signal.Notify(sigc,
+		signal.Notify(
+			sigc,
 			syscall.SIGINT,
 			syscall.SIGTERM,
 			syscall.SIGQUIT,
-			syscall.SIGTSTP)
+			syscall.SIGTSTP,
+		)
 	}
 	go func() {
 		<-sigc
